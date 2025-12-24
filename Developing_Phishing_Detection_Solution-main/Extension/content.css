@@ -1,0 +1,274 @@
+/* PhishShield Content Styles */
+/* Styles for link highlighting and warning overlays */
+
+/* Link Indicators */
+.phishshield-safe {
+  position: relative;
+}
+
+.phishshield-safe::after {
+  content: '✓';
+  font-size: 10px;
+  margin-left: 4px;
+  color: #10b981;
+  font-weight: bold;
+}
+
+.phishshield-suspicious {
+  position: relative;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, transparent 100%) !important;
+  border-bottom: 2px solid #f59e0b !important;
+  padding-bottom: 1px;
+}
+
+.phishshield-suspicious::after {
+  content: '⚠️';
+  font-size: 10px;
+  margin-left: 4px;
+}
+
+.phishshield-malicious {
+  position: relative;
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, transparent 100%) !important;
+  border-bottom: 2px solid #ef4444 !important;
+  padding-bottom: 1px;
+  text-decoration: line-through;
+  text-decoration-color: #ef4444;
+}
+
+.phishshield-malicious::after {
+  content: '🚨';
+  font-size: 10px;
+  margin-left: 4px;
+}
+
+/* Tooltip Styles */
+.phishshield-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #1a1f2e 0%, #0a0e17 100%);
+  color: #e2e8f0;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 999999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.phishshield-suspicious .phishshield-tooltip {
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.phishshield-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: #1a1f2e;
+}
+
+.phishshield-suspicious:hover .phishshield-tooltip,
+.phishshield-malicious:hover .phishshield-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+.phishshield-tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.phishshield-tooltip-icon {
+  font-size: 16px;
+}
+
+.phishshield-tooltip-title {
+  font-weight: 600;
+  color: #ef4444;
+}
+
+.phishshield-suspicious .phishshield-tooltip-title {
+  color: #f59e0b;
+}
+
+.phishshield-tooltip-score {
+  color: #94a3b8;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.phishshield-tooltip-hint {
+  color: #64748b;
+  font-size: 10px;
+  font-style: italic;
+}
+
+/* Page Warning Overlay */
+#phishshield-page-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(10, 14, 23, 0.98) 0%, rgba(26, 31, 46, 0.98) 100%);
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.phishshield-warning-content {
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.1) 0%, #1a2234 100%);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 20px;
+  padding: 40px 50px;
+  max-width: 550px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.phishshield-warning-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.phishshield-warning-content h1 {
+  color: #ef4444;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.phishshield-warning-main {
+  color: #e2e8f0;
+  font-size: 18px;
+  margin: 0 0 16px 0;
+}
+
+.phishshield-warning-detail {
+  color: #94a3b8;
+  font-size: 14px;
+  margin: 0 0 20px 0;
+  line-height: 1.6;
+}
+
+.phishshield-warning-detail strong {
+  color: #ef4444;
+  font-size: 16px;
+}
+
+.phishshield-warning-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.phishshield-reason-tag {
+  font-size: 11px;
+  padding: 4px 12px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 20px;
+  color: #f87171;
+}
+
+.phishshield-warning-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.phishshield-btn-leave {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.phishshield-btn-leave:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.phishshield-btn-proceed {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.phishshield-btn-proceed:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.phishshield-warning-tip {
+  color: #64748b;
+  font-size: 12px;
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .phishshield-warning-content {
+    margin: 20px;
+    padding: 30px 25px;
+  }
+  
+  .phishshield-warning-buttons {
+    flex-direction: column;
+  }
+}
+

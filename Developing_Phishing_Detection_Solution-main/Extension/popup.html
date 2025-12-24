@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishShield</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-card: #1a2234;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-safe: #10b981;
+      --accent-safe-glow: rgba(16, 185, 129, 0.3);
+      --accent-warning: #f59e0b;
+      --accent-warning-glow: rgba(245, 158, 11, 0.3);
+      --accent-danger: #ef4444;
+      --accent-danger-glow: rgba(239, 68, 68, 0.3);
+      --accent-blue: #3b82f6;
+      --accent-blue-glow: rgba(59, 130, 246, 0.3);
+      --border-color: #2d3748;
+      --gradient-bg: linear-gradient(135deg, #0a0e17 0%, #1a1f2e 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 380px;
+      min-height: 500px;
+      background: var(--gradient-bg);
+      font-family: 'Outfit', sans-serif;
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(180deg, rgba(59, 130, 246, 0.15) 0%, transparent 100%);
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .header-content {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, #8b5cf6 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 20px var(--accent-blue-glow);
+    }
+
+    .header-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-text p {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .status-indicator {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      font-size: 11px;
+      color: var(--accent-safe);
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-safe);
+      border-radius: 50%;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Main Content */
+    .content {
+      padding: 20px;
+    }
+
+    /* Current URL Section */
+    .url-section {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .current-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--bg-secondary);
+      padding: 10px 12px;
+      border-radius: 8px;
+      word-break: break-all;
+      max-height: 60px;
+      overflow-y: auto;
+    }
+
+    /* Risk Card */
+    .risk-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .risk-card.safe {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, var(--bg-card) 100%);
+    }
+
+    .risk-card.suspicious {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.1) 0%, var(--bg-card) 100%);
+    }
+
+    .risk-card.malicious {
+      border-color: rgba(239, 68, 68, 0.4);
+      background: linear-gradient(180deg, rgba(239, 68, 68, 0.1) 0%, var(--bg-card) 100%);
+    }
+
+    .risk-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      position: relative;
+    }
+
+    .risk-card.safe .risk-icon {
+      background: rgba(16, 185, 129, 0.2);
+      box-shadow: 0 0 30px var(--accent-safe-glow);
+    }
+
+    .risk-card.suspicious .risk-icon {
+      background: rgba(245, 158, 11, 0.2);
+      box-shadow: 0 0 30px var(--accent-warning-glow);
+    }
+
+    .risk-card.malicious .risk-icon {
+      background: rgba(239, 68, 68, 0.2);
+      box-shadow: 0 0 30px var(--accent-danger-glow);
+      animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .risk-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .risk-card.safe .risk-title { color: var(--accent-safe); }
+    .risk-card.suspicious .risk-title { color: var(--accent-warning); }
+    .risk-card.malicious .risk-title { color: var(--accent-danger); }
+
+    .risk-description {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .risk-score {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      background: var(--bg-secondary);
+      border-radius: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .reason-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+      justify-content: center;
+    }
+
+    .reason-tag {
+      font-size: 10px;
+      padding: 4px 10px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    /* Loading State */
+    .loading-state {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--bg-secondary);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    /* Action Buttons */
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-blue) 0%, #8b5cf6 100%);
+      color: white;
+      grid-column: span 2;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px var(--accent-blue-glow);
+    }
+
+    .btn-safe {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-safe);
+    }
+
+    .btn-safe:hover {
+      background: rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--accent-danger);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .btn-warning {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--accent-warning);
+      grid-column: span 2;
+    }
+
+    .btn-warning:hover {
+      background: rgba(245, 158, 11, 0.25);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Page Links Section */
+    .links-section {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .links-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .links-header h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .links-count {
+      font-size: 11px;
+      padding: 4px 10px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      color: var(--text-muted);
+    }
+
+    .links-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 10px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-value.safe { color: var(--accent-safe); }
+    .stat-value.suspicious { color: var(--accent-warning); }
+    .stat-value.malicious { color: var(--accent-danger); }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    .scan-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .scan-btn:hover {
+      background: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      border-color: rgba(16, 185, 129, 0.4);
+      color: var(--accent-safe);
+    }
+
+    .toast.error {
+      border-color: rgba(239, 68, 68, 0.4);
+      color: var(--accent-danger);
+    }
+
+    /* Connection Error */
+    .error-state {
+      text-align: center;
+      padding: 30px 20px;
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .error-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .error-title {
+      color: var(--accent-danger);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .error-desc {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+ 
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">🛡️</div>
+      <div class="header-text">
+        <h1>PhishShield</h1>
+        <p>Phishing Detection</p>
+      </div>
+      <div class="status-indicator" id="apiStatus">
+        <div class="status-dot"></div>
+        <span>Connected</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Current URL Section -->
+    <div class="url-section">
+      <div class="section-label">
+        <span>🌐</span> Current Page
+      </div>
+      <div class="current-url" id="currentUrl">Loading...</div>
+    </div>
+
+    <!-- Risk Assessment Card -->
+    <div id="riskCardContainer">
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <div class="loading-text">Analyzing URL...</div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions" id="actionButtons" style="display: none;">
+      <button class="btn btn-primary" id="scanBtn">
+        <span>🔄</span> Re-scan URL
+      </button>
+      <button class="btn btn-safe" id="whitelistBtn">
+        <span>✓</span> Trust Site
+      </button>
+      <button class="btn btn-danger" id="blacklistBtn">
+        <span>✗</span> Block Site
+      </button>
+      <button class="btn btn-warning" id="reportBtn">
+        <span>⚠️</span> Report as Phishing
+      </button>
+    </div>
+
+    <!-- Page Links Analysis -->
+    <div class="links-section">
+      <div class="links-header">
+        <h3><span>🔗</span> Page Links Analysis</h3>
+        <span class="links-count" id="linksCount">0 links</span>
+      </div>
+      <div class="links-stats">
+        <div class="stat-item">
+          <div class="stat-value safe" id="safeCount">0</div>
+          <div class="stat-label">Safe</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value suspicious" id="suspiciousCount">0</div>
+          <div class="stat-label">Suspicious</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value malicious" id="maliciousCount">0</div>
+          <div class="stat-label">Malicious</div>
+        </div>
+      </div>
+      <button class="scan-btn" id="scanLinksBtn">
+        <span>🔍</span> Scan All Links on Page
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+
+  <script src="config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

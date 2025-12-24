@@ -1,0 +1,27 @@
+{
+  "feature_names": [
+    "feat_url_length",
+    "feat_hostname_length",
+    "feat_path_length",
+    "feat_count_hyphen",
+    "feat_count_at",
+    "feat_count_dot",
+    "feat_count_slash",
+    "feat_count_percent",
+    "feat_count_digits",
+    "feat_count_letters",
+    "feat_has_login",
+    "feat_has_secure",
+    "feat_has_bank",
+    "feat_has_account",
+    "feat_has_verify",
+    "feat_has_password",
+    "feat_has_signin",
+    "feat_total_keywords",
+    "feat_subdomain_count",
+    "feat_domain_length",
+    "feat_suffix_length",
+    "feat_use_https",
+    "feat_use_ip"
+  ]
+}

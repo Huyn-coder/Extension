@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Collector - Chrome Extension</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        
+        .icon {
+            text-align: center;
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        .features {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .features ul {
+            margin-left: 20px;
+        }
+        
+        .features li {
+            margin-bottom: 10px;
+        }
+        
+        .steps {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .steps ol {
+            margin-left: 20px;
+        }
+        
+        .steps li {
+            margin-bottom: 15px;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .important {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🔗</div>
+        <h1>Link Collector</h1>
+        <p style="text-align: center; font-size: 1.2em; color: #666;">
+            Automatically collect and save all links from your browsing tabs
+        </p>
+        
+        <div class="features">
+            <h2>✨ Features</h2>
+            <ul>
+                <li>🔄 <strong>Automatic Detection</strong> - Links are collected automatically when you open or switch tabs</li>
+                <li>📝 <strong>Single File Collection</strong> - All links are saved to one continuous text file</li>
+                <li>💾 <strong>Easy Export</strong> - Download your collected links anytime with one click</li>
+                <li>📊 <strong>Live Statistics</strong> - See how many links you've collected and when they were last updated</li>
+                <li>🧹 <strong>Clear Function</strong> - Reset your collection whenever you want to start fresh</li>
+            </ul>
+        </div>
+        
+        <h2>📦 Installation Instructions</h2>
+        <div class="steps">
+            <ol>
+                <li>Download or clone this project to your computer</li>
+                <li>Open Google Chrome browser</li>
+                <li>Navigate to <code>chrome://extensions/</code></li>
+                <li>Enable <strong>"Developer mode"</strong> using the toggle in the top right corner</li>
+                <li>Click the <strong>"Load unpacked"</strong> button</li>
+                <li>Select the folder containing this extension (the folder with <code>manifest.json</code>)</li>
+                <li>The Link Collector extension should now appear in your extensions list</li>
+                <li>Pin the extension to your toolbar for easy access (click the puzzle icon and pin)</li>
+            </ol>
+        </div>
+        
+        <h2>🚀 How to Use</h2>
+        <div class="steps">
+            <ol>
+                <li><strong>Browse normally</strong> - The extension works automatically in the background</li>
+                <li><strong>Switch tabs</strong> - Each time you switch to a new tab, links are automatically collected</li>
+                <li><strong>Check your stats</strong> - Click the extension icon to see how many links have been collected</li>
+                <li><strong>Download links</strong> - Click "Download Links" in the popup to save all collected links to a text file</li>
+                <li><strong>Clear when needed</strong> - Use the "Clear All Links" button to start a new collection</li>
+            </ol>
+        </div>
+        
+        <div class="important">
+            <strong>⚠️ Note:</strong> The extension only collects links from regular web pages. 
+            Chrome internal pages (like <code>chrome://</code> URLs) are excluded for security reasons.
+        </div>
+        
+        <h2>🎯 Use Cases</h2>
+        <div class="features">
+            <ul>
+                <li>Research projects - Collect all reference links while browsing</li>
+                <li>Web development - Save all URLs you visit during testing</li>
+                <li>Content curation - Gather links for later review</li>
+                <li>Link auditing - Collect links from multiple pages for analysis</li>
+                <li>Digital archiving - Save URLs from your browsing sessions</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>Built with ❤️ for Chrome • Version 1.0.0</p>
+        </div>
+    </div>
+</body>
+</html>
