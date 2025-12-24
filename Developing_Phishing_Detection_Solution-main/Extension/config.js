@@ -14,8 +14,8 @@ const PHISHSHIELD_CONFIG = {
   
   // Risk thresholds
   THRESHOLDS: {
-    MALICIOUS: 0.8,
-    SUSPICIOUS: 0.5
+    MALICIOUS: 0.6,
+    SUSPICIOUS: 0.4
   },
   
   // Auto-scan settings
