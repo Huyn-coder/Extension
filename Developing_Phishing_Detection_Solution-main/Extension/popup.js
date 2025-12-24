@@ -7,11 +7,63 @@ class PhishShieldPopup {
   }
 
   async init() {
+    await this.initTheme();
+
     await this.getCurrentTab();
-    await this.checkApiConnection();
-    await this.scanCurrentUrl();
+    
+    const isOnline = await this.checkApiConnection();
+
+    if (this.currentUrl && this.currentUrl.startsWith('http')) {
+      try {
+        const cachedResult = await chrome.runtime.sendMessage({
+          action: 'getScanResult',
+          url: this.currentUrl
+        });
+
+        if (cachedResult) {
+          console.log('Loaded from cache');
+          document.getElementById('riskCardContainer').innerHTML = this.renderRiskCard(cachedResult);
+          document.getElementById('actionButtons').style.display = 'grid';
+          document.getElementById('loadingState').style.display = 'none';
+        } else {
+          await this.scanCurrentUrl();
+        }
+      } catch (e) {
+        await this.scanCurrentUrl();
+      }
+    } else {
+      await this.scanCurrentUrl(); 
+    }
+    
     this.setupEventListeners();
     this.loadPageLinksStats();
+  }
+
+  async initTheme() {
+    const toggleBtn = document.getElementById('themeToggle');
+    const iconSpan = toggleBtn.querySelector('.theme-icon');
+
+    const data = await chrome.storage.local.get(['theme']);
+    const currentTheme = data.theme || 'light';
+
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      iconSpan.textContent = '🌙';
+    } else {
+      document.body.classList.remove('dark-mode');
+      iconSpan.textContent = '🌞';
+    }
+
+    toggleBtn.addEventListener('click', async () => {
+      document.body.classList.toggle('dark-mode');
+      
+      const isDark = document.body.classList.contains('dark-mode');
+      const newTheme = isDark ? 'dark' : 'light';
+      
+      iconSpan.textContent = isDark ? '🌙' : '🌞';
+
+      await chrome.storage.local.set({ theme: newTheme });
+    });
   }
 
   async getCurrentTab() {
