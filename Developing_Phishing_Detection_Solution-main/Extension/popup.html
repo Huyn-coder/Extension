@@ -311,8 +311,7 @@
 
     .loading-text { color: var(--text-secondary); font-size: 13px; }
 
-    /* --- STYLE MỚI CHO LIST LINK --- */
-    /* Khung chứa danh sách cuộn */
+
     .bad-links-area {
       margin-bottom: 12px;
       border-top: 1px solid var(--border-color);
@@ -320,7 +319,6 @@
     }
 
     .bad-links-container {
-      /* Mấu chốt: Giới hạn chiều cao khoảng 10 dòng và cho phép cuộn */
       max-height: 150px; 
       overflow-y: auto;  
       
@@ -332,7 +330,6 @@
       font-size: 11px;
     }
 
-    /* Thanh cuộn nhỏ gọn */
     .bad-links-container::-webkit-scrollbar {
       width: 6px;
     }
@@ -344,7 +341,6 @@
       background: transparent;
     }
 
-    /* Giao diện từng dòng link */
     .link-item {
       display: flex;
       justify-content: space-between;
@@ -361,12 +357,11 @@
     .link-url {
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis; /* Cắt bớt URL dài bằng dấu ... */
+      text-overflow: ellipsis; 
       max-width: 200px;
       color: var(--text-primary);
     }
 
-    /* Màu cảnh báo */
     .link-item.suspicious { border-left-color: var(--accent-warning); }
     .link-item.malicious { border-left-color: var(--accent-danger); background: #fff5f5; }
 
@@ -380,7 +375,6 @@
     .link-item.suspicious .link-badge { color: var(--accent-warning); background: var(--accent-warning-bg); }
     .link-item.malicious .link-badge { color: var(--accent-danger); background: var(--accent-danger-bg); }
 
-    /* Toast Notification */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -402,7 +396,6 @@
     .toast.success { border-color: rgba(16, 185, 129, 0.4); color: var(--accent-safe); }
     .toast.error { border-color: rgba(239, 68, 68, 0.4); color: var(--accent-danger); }
 
-    /* Error States */
     .error-state {
       text-align: center;
       padding: 30px 20px;
@@ -482,7 +475,7 @@
       </div>
 
       <div id="badLinksArea" class="bad-links-area" style="display: none;">
-        <div class="section-label" style="margin-bottom: 8px;">⚠️ Phát hiện link rủi ro:</div>
+        <div class="section-label" style="margin-bottom: 8px;">⚠️ Suspicious URL Identification:</div>
         <div class="bad-links-container" id="badLinksList">
             </div>
       </div>
