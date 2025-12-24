@@ -1,6 +1,3 @@
-// PhishShield Popup Script
-// Connects with the FastAPI backend for phishing detection
-
 class PhishShieldPopup {
   constructor() {
     this.config = PHISHSHIELD_CONFIG;
@@ -10,19 +7,10 @@ class PhishShieldPopup {
   }
 
   async init() {
-    // Get current tab info
     await this.getCurrentTab();
-    
-    // Check API connection
     await this.checkApiConnection();
-    
-    // Scan current URL
     await this.scanCurrentUrl();
-    
-    // Setup event listeners
     this.setupEventListeners();
-    
-    // Load page links stats
     this.loadPageLinksStats();
   }
 
@@ -55,9 +43,8 @@ class PhishShieldPopup {
       
       if (response.ok) {
         statusEl.innerHTML = '<div class="status-dot"></div><span>Connected</span>';
-        statusEl.style.background = 'rgba(16, 185, 129, 0.15)';
-        statusEl.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-        statusEl.style.color = '#10b981';
+        statusEl.style.background = 'var(--accent-safe-bg)';
+        statusEl.style.color = 'var(--accent-safe)';
         return true;
       }
     } catch (error) {
@@ -65,9 +52,8 @@ class PhishShieldPopup {
     }
     
     statusEl.innerHTML = '<span>⚠️</span><span>Offline</span>';
-    statusEl.style.background = 'rgba(239, 68, 68, 0.15)';
-    statusEl.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-    statusEl.style.color = '#ef4444';
+    statusEl.style.background = 'var(--accent-danger-bg)';
+    statusEl.style.color = 'var(--accent-danger)';
     return false;
   }
 
@@ -76,14 +62,12 @@ class PhishShieldPopup {
     const loadingState = document.getElementById('loadingState');
     const actionButtons = document.getElementById('actionButtons');
     
-    // Skip non-http URLs
     if (!this.currentUrl || !this.currentUrl.startsWith('http')) {
       container.innerHTML = this.renderInfoCard('Internal Page', 'This is a browser internal page and cannot be scanned.');
       actionButtons.style.display = 'none';
       return;
     }
 
-    // Show loading
     loadingState.style.display = 'block';
     actionButtons.style.display = 'none';
 
@@ -100,11 +84,9 @@ class PhishShieldPopup {
         throw new Error(data.error);
       }
 
-      // Render risk card
       container.innerHTML = this.renderRiskCard(data);
       actionButtons.style.display = 'grid';
       
-      // Store result for badge update
       chrome.runtime.sendMessage({
         action: 'updateBadge',
         risk: data.risk,
@@ -184,17 +166,12 @@ class PhishShieldPopup {
     return '#10b981';
   }
 
-formatReason(reason) {
+  formatReason(reason) {
     const reasonMap = {
-        // Basic statuses
         'whitelist': '✅ Whitelisted',
         'blacklist': '🚫 Blacklisted',
-        
-        // AI & Model
         'model_probability': '🤖 AI Analysis', 
         'ML Analysis': '🤖 AI Analysis', 
-
-        // Specific Features (The ones you saw)
         'has_https': '🔒 Secured with HTTPS',
         'no_https': '⚠️ Missing HTTPS',
         'personal_domain_pattern': '⚠️ Suspicious Domain Pattern',
@@ -204,40 +181,31 @@ formatReason(reason) {
         'long_url': '📏 URL Too Long',
         'short_url': '🔗 Shortened URL',
         'trusted_pattern': '🛡️ Trusted Pattern',
-        
-        // Score adjustments
         'score_adjusted_for_https': '🔒 HTTPS Bonus',
         'score_adjusted_for_known_tld': '🌐 Known TLD',
         'score_adjusted_for_short_url': '🔗 Short URL Penalty'
     };
 
-    // If the reason exists in the map, use it. 
-    // If not, replace underscores (_) with spaces to make it readable (fallback).
     return reasonMap[reason] || reason.replace(/_/g, ' ');
-}
+  }
 
   setupEventListeners() {
-    // Re-scan button
     document.getElementById('scanBtn').addEventListener('click', () => {
       this.scanCurrentUrl();
     });
 
-    // Whitelist button
     document.getElementById('whitelistBtn').addEventListener('click', () => {
       this.addToList('whitelist');
     });
 
-    // Blacklist button
     document.getElementById('blacklistBtn').addEventListener('click', () => {
       this.addToList('blacklist');
     });
 
-    // Report button
     document.getElementById('reportBtn').addEventListener('click', () => {
       this.reportUrl();
     });
 
-    // Scan all links button
     document.getElementById('scanLinksBtn').addEventListener('click', () => {
       this.scanPageLinks();
     });
@@ -264,7 +232,6 @@ formatReason(reason) {
 
       if (data.ok) {
         this.showToast(`Added to ${listType} successfully!`, 'success');
-        // Re-scan to update the UI
         setTimeout(() => this.scanCurrentUrl(), 500);
       } else {
         throw new Error(data.error || 'Unknown error');
@@ -322,25 +289,29 @@ formatReason(reason) {
 
   async scanPageLinks() {
     const btn = document.getElementById('scanLinksBtn');
+    const badLinksArea = document.getElementById('badLinksArea');
+    const badLinksList = document.getElementById('badLinksList');
+
+    badLinksList.innerHTML = '';
+    badLinksArea.style.display = 'none';
+
     btn.disabled = true;
     btn.innerHTML = '<span>⏳</span> Scanning...';
 
     try {
-      // Get links from content script
       const response = await chrome.tabs.sendMessage(this.currentTabId, { action: 'getLinks' });
       
       if (!response || !response.links) {
         throw new Error('No links found');
       }
 
-      const links = [...new Set(response.links)]; // Remove duplicates
+      const links = [...new Set(response.links)];
       document.getElementById('linksCount').textContent = `${links.length} links`;
 
-      // Scan each link
       const stats = { total: links.length, safe: 0, suspicious: 0, malicious: 0 };
       const results = [];
 
-      for (const link of links.slice(0, 50)) { // Limit to 50 links
+      for (const link of links.slice(0, 50)) { 
         try {
           const checkResponse = await fetch(`${this.config.API_URL}${this.config.ENDPOINTS.CHECK_URL}`, {
             method: 'POST',
@@ -356,17 +327,30 @@ formatReason(reason) {
           else if (data.risk === 'malicious') stats.malicious++;
 
           this.updateLinksStats(stats);
+
+          if (data.risk === 'malicious' || data.risk === 'suspicious') {
+            badLinksArea.style.display = 'block';
+
+            const div = document.createElement('div');
+            div.className = `link-item ${data.risk}`;
+            
+            div.innerHTML = `
+                <div class="link-url" title="${link}">${link}</div>
+                <div class="link-badge">${data.risk === 'malicious' ? 'DANGER' : 'SUSPECT'}</div>
+            `;
+
+            badLinksList.appendChild(div);
+          }
+
         } catch (error) {
           console.error('Error scanning link:', link, error);
         }
       }
 
-      // Save stats
       const pageLinksStats = (await chrome.storage.local.get(['pageLinksStats'])).pageLinksStats || {};
       pageLinksStats[this.currentUrl] = stats;
       await chrome.storage.local.set({ pageLinksStats });
 
-      // Send results to content script for highlighting
       chrome.tabs.sendMessage(this.currentTabId, {
         action: 'highlightLinks',
         results: results
@@ -393,7 +377,6 @@ formatReason(reason) {
   }
 }
 
-// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   new PhishShieldPopup();
 });
