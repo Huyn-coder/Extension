@@ -70,11 +70,23 @@ async function scanUrl(url, tabId) {
 
   const cacheKey = url.toLowerCase();
   const cached = urlCache.get(cacheKey);
+  
+  // Kiểm tra Cache
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     updateBadge(cached.result.risk, tabId);
+    
+    // Nếu cache báo nguy hiểm -> Hiện cảnh báo ngay
+    if (cached.result.risk === 'malicious') {
+      chrome.tabs.sendMessage(tabId, { 
+        action: 'showWarning', 
+        result: cached.result 
+      }).catch(() => {}); 
+    }
+    
     return cached.result;
   }
 
+  // Quét mới từ API
   try {
     const response = await fetch(`${API_CONFIG.API_URL}${API_CONFIG.ENDPOINTS.CHECK_URL}`, {
       method: 'POST',
@@ -99,6 +111,12 @@ async function scanUrl(url, tabId) {
 
     if (result.risk === 'malicious') {
       showNotification(url, result);
+      
+      // Nếu API báo nguy hiểm -> Hiện cảnh báo ngay
+      chrome.tabs.sendMessage(tabId, { 
+        action: 'showWarning', 
+        result: result 
+      }).catch(() => {});
     }
 
     return result;

@@ -27,6 +27,17 @@
       const links = extractAllLinks();
       sendResponse({ links: links });
     }
+
+    // --- PHẦN MỚI THÊM VÀO ---
+    // Nhận lệnh hiển thị cảnh báo từ background.js
+    else if (request.action === 'showWarning') {
+      // Kiểm tra xem người dùng đã từng chọn "Continue" cho trang này chưa
+      const dismissed = sessionStorage.getItem('phishshield-dismissed-' + window.location.hostname);
+      if (!dismissed) {
+        showPageWarning(request.result);
+      }
+    }
+    // -------------------------
     
     return true;
   });
