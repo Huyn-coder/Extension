@@ -133,7 +133,7 @@
     overlay.id = 'phishshield-page-warning';
     overlay.innerHTML = `
       <div class="phishshield-warning-content">
-        <div class="phishshield-warning-icon">🛡️</div>
+        <div class="phishshield-warning-icon">🚨</div>
         <h1>PhishShield Warning</h1>
         <p class="phishshield-warning-main">This website may be a phishing attempt!</p>
         <p class="phishshield-warning-detail">
@@ -150,7 +150,7 @@
           </button>
         </div>
         <p class="phishshield-warning-tip">
-          💡 Tip: Never enter passwords or personal information on suspicious websites.
+           Be careful when enter passwords or personal information on suspicious websites.
         </p>
       </div>
     `;
