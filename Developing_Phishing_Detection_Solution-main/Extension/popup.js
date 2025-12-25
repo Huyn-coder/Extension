@@ -152,24 +152,49 @@ class PhishShieldPopup {
     }
   }
 
+  // --- HÀM NÀY ĐÃ ĐƯỢC CẬP NHẬT LOGIC MỚI ---
   renderRiskCard(data) {
+    // 1. Xác định xem tên miền có phải là nền tảng lớn (Big Tech) không
+    let isTrustedPlatform = false;
+    try {
+        const hostname = new URL(this.currentUrl).hostname;
+        const trustedDomains = [
+            'facebook.com', 'www.facebook.com', 'm.facebook.com',
+            'google.com', 'www.google.com',
+            'youtube.com', 'www.youtube.com',
+            'instagram.com', 'www.instagram.com',
+            'twitter.com', 'x.com',
+            'linkedin.com', 'www.linkedin.com',
+            'github.com', 'www.github.com'
+        ];
+        // Kiểm tra xem hostname có chứa domain tin cậy không
+        isTrustedPlatform = trustedDomains.some(d => hostname.endsWith(d));
+    } catch(e) {}
+
     const icons = {
       safe: '✅',
       suspicious: '⚠️',
       malicious: '🚨'
     };
 
-    const titles = {
+    // 2. Điều chỉnh tiêu đề và mô tả dựa trên ngữ cảnh
+    let titles = {
       safe: 'Safe Website',
       suspicious: 'Suspicious URL',
       malicious: 'Phishing Detected!'
     };
 
-    const descriptions = {
+    let descriptions = {
       safe: 'This website appears to be legitimate and safe to use.',
       suspicious: 'This URL shows some suspicious patterns. Proceed with caution.',
       malicious: 'WARNING: This website is likely a phishing attempt. Do not enter any personal information!'
     };
+
+    // LOGIC MỚI: Nếu là Facebook/Google nhưng bị báo Suspicious -> Đổi lời cảnh báo
+    if (isTrustedPlatform && data.risk === 'suspicious') {
+        titles.suspicious = 'Caution: User Content';
+        descriptions.suspicious = 'This domain is trusted, but it may contain suspicious links or content posted by users. Be careful what you click.';
+    }
 
     const score = (data.score * 100).toFixed(1);
     const reasons = data.reasons || [];
@@ -191,6 +216,7 @@ class PhishShieldPopup {
       </div>
     `;
   }
+  // ------------------------------------------
 
   renderInfoCard(title, description) {
     return `
