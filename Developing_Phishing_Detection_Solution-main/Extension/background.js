@@ -43,15 +43,20 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
   }
 });
 
-// --- ĐÃ SỬA: Xóa bỏ đoạn manual injection để tránh xung đột ---
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && tab.url && tab.url.startsWith('http')) {
     await scanUrl(tab.url, tabId);
-    // Không cần chrome.scripting.executeScript ở đây nữa
-    // vì manifest.json đã tự động làm việc này rồi.
+    
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        files: ['config.js', 'content.js']
+      });
+    } catch (error) {
+      console.log('Content script injection:', error.message);
+    }
   }
 });
-// ------------------------------------------------------------
 
 chrome.webNavigation.onCompleted.addListener(async (details) => {
   if (details.frameId === 0 && details.url.startsWith('http')) {
@@ -69,7 +74,7 @@ async function scanUrl(url, tabId) {
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     updateBadge(cached.result.risk, tabId);
     
-    if (cached.result.risk === 'malicious' || cached.result.risk === 'suspicious') {
+    if (cached.result.risk === 'malicious') {
       chrome.tabs.sendMessage(tabId, { 
         action: 'showWarning', 
         result: cached.result 
@@ -101,7 +106,7 @@ async function scanUrl(url, tabId) {
 
     updateBadge(result.risk, tabId);
 
-    if (result.risk === 'malicious' || result.risk === 'suspicious') {
+    if (result.risk === 'malicious') {
       showNotification(url, result);
       
       chrome.tabs.sendMessage(tabId, { 
@@ -136,13 +141,12 @@ function showNotification(url, result) {
   chrome.storage.local.get(['showNotifications'], (data) => {
     if (data.showNotifications !== false) {
       const hostname = new URL(url).hostname;
-      const title = result.risk === 'malicious' ? '🚨 Phishing Alert!' : '⚠️ Suspicious Site';
       
       chrome.notifications.create({
         type: 'basic',
         iconUrl: 'icon128.png',
-        title: title,
-        message: `Warning: ${hostname} has a risk score of ${(result.score * 100).toFixed(0)}%`,
+        title: '🚨 Phishing Alert!',
+        message: `Warning: ${hostname} may be a phishing site. Risk score: ${(result.score * 100).toFixed(0)}%`,
         priority: 2
       });
     }
