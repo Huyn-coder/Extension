@@ -151,10 +151,8 @@ class PhishShieldPopup {
       actionButtons.style.display = 'none';
     }
   }
-
-  // --- HÀM NÀY ĐÃ ĐƯỢC CẬP NHẬT LOGIC MỚI ---
+// logic 
   renderRiskCard(data) {
-    // 1. Xác định xem tên miền có phải là nền tảng lớn (Big Tech) không
     let isTrustedPlatform = false;
     try {
         const hostname = new URL(this.currentUrl).hostname;
@@ -167,7 +165,6 @@ class PhishShieldPopup {
             'linkedin.com', 'www.linkedin.com',
             'github.com', 'www.github.com'
         ];
-        // Kiểm tra xem hostname có chứa domain tin cậy không
         isTrustedPlatform = trustedDomains.some(d => hostname.endsWith(d));
     } catch(e) {}
 
@@ -177,7 +174,6 @@ class PhishShieldPopup {
       malicious: '🚨'
     };
 
-    // 2. Điều chỉnh tiêu đề và mô tả dựa trên ngữ cảnh
     let titles = {
       safe: 'Safe Website',
       suspicious: 'Suspicious URL',
@@ -190,7 +186,6 @@ class PhishShieldPopup {
       malicious: 'WARNING: This website is likely a phishing attempt. Do not enter any personal information!'
     };
 
-    // LOGIC MỚI: Nếu là Facebook/Google nhưng bị báo Suspicious -> Đổi lời cảnh báo
     if (isTrustedPlatform && data.risk === 'suspicious') {
         titles.suspicious = 'Caution: User Content';
         descriptions.suspicious = 'This domain is trusted, but it may contain suspicious links or content posted by users. Be careful what you click.';
