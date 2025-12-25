@@ -8,7 +8,6 @@ class PhishShieldPopup {
 
   async init() {
     await this.initTheme();
-
     await this.getCurrentTab();
     
     const isOnline = await this.checkApiConnection();
@@ -21,7 +20,6 @@ class PhishShieldPopup {
         });
 
         if (cachedResult) {
-          console.log('Loaded from cache');
           document.getElementById('riskCardContainer').innerHTML = this.renderRiskCard(cachedResult);
           document.getElementById('actionButtons').style.display = 'grid';
           document.getElementById('loadingState').style.display = 'none';
@@ -75,7 +73,6 @@ class PhishShieldPopup {
         document.getElementById('currentUrl').textContent = this.truncateUrl(tab.url, 80);
       }
     } catch (error) {
-      console.error('Error getting current tab:', error);
       document.getElementById('currentUrl').textContent = 'Unable to get URL';
     }
   }
@@ -100,7 +97,6 @@ class PhishShieldPopup {
         return true;
       }
     } catch (error) {
-      console.error('API connection error:', error);
     }
     
     statusEl.innerHTML = '<span>⚠️</span><span>Offline</span>';
@@ -146,25 +142,16 @@ class PhishShieldPopup {
       });
 
     } catch (error) {
-      console.error('Scan error:', error);
       container.innerHTML = this.renderErrorCard('Connection Error', 'Unable to connect to PhishShield server. Please make sure the backend is running.');
       actionButtons.style.display = 'none';
     }
   }
-// logic 
+
   renderRiskCard(data) {
     let isTrustedPlatform = false;
     try {
         const hostname = new URL(this.currentUrl).hostname;
-        const trustedDomains = [
-            'facebook.com', 'www.facebook.com', 'm.facebook.com',
-            'google.com', 'www.google.com',
-            'youtube.com', 'www.youtube.com',
-            'instagram.com', 'www.instagram.com',
-            'twitter.com', 'x.com',
-            'linkedin.com', 'www.linkedin.com',
-            'github.com', 'www.github.com'
-        ];
+        const trustedDomains = this.config.TRUSTED_PLATFORMS || []; 
         isTrustedPlatform = trustedDomains.some(d => hostname.endsWith(d));
     } catch(e) {}
 
@@ -211,7 +198,6 @@ class PhishShieldPopup {
       </div>
     `;
   }
-  // ------------------------------------------
 
   renderInfoCard(title, description) {
     return `
